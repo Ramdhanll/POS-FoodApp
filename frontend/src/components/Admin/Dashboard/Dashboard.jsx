@@ -1,10 +1,10 @@
-import { Box, Flex, Heading, Stack, Text } from '@chakra-ui/layout'
+import { Box, Flex, Heading, Text } from '@chakra-ui/layout'
 import React from 'react'
 
 const Dashboard = () => {
    return (
       <>
-         <Box p={8} w={['100%', '100%', '80%']} h="100%">
+         <Box p={8} w={['100%', '100%', '100%']} h="100%">
             <Heading color="secondary" size="lg">
                Overview
             </Heading>
