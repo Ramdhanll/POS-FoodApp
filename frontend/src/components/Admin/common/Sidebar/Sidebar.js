@@ -199,7 +199,7 @@ const Sidebar = ({ openSidebar }) => {
             'flex',
          ]}
          position={{ base: 'absolute', md: 'inherit', lg: 'inherit' }}
-         transition="all 0.5s ease-out"
+         transition="display 0.5s ease-out"
          backgroundColor="white"
          p={3}
          minW={['200px', '230px', '260px']}
