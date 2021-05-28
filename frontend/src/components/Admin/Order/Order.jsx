@@ -1,5 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { useReactToPrint } from 'react-to-print'
+import Barcode from 'react-barcode'
+import QRCode from 'react-qr-code'
 import {
    Button,
    CloseButton,
@@ -8,15 +10,30 @@ import {
    DrawerContent,
    DrawerHeader,
    DrawerOverlay,
+   FormControl,
+   FormLabel,
    Image,
+   Modal,
+   ModalBody,
+   ModalCloseButton,
+   ModalContent,
+   ModalFooter,
+   ModalHeader,
+   ModalOverlay,
    useDisclosure,
 } from '@chakra-ui/react'
-import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input'
+import {
+   Input,
+   InputGroup,
+   InputLeftAddon,
+   InputLeftElement,
+} from '@chakra-ui/input'
 import { Badge, Box, Divider, Flex, Heading, Text } from '@chakra-ui/layout'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table'
 import { Select } from '@chakra-ui/select'
 import { MdSearch, MdPrint } from 'react-icons/md'
 import { FaTelegramPlane } from 'react-icons/fa'
+import { IoMdBarcode } from 'react-icons/io'
 import { HiCash } from 'react-icons/hi'
 import { orders } from '../../../Dummies/'
 import { COLORS } from '../../constants'
@@ -24,8 +41,22 @@ import { COLORS } from '../../constants'
 const Order = () => {
    const [active, setActive] = useState(null)
    const [order, setOrder] = useState([])
+   const [charge, setCharge] = useState(0)
+   const initialRef = useRef()
    const { isOpen, onOpen, onClose } = useDisclosure()
-   const componentRef = useRef()
+   const {
+      isOpen: isOpenModalBarcode,
+      onOpen: onOpenModalBarcode,
+      onClose: onCloseModalBarcode,
+   } = useDisclosure()
+   const {
+      isOpen: isOpenModalPay,
+      onOpen: onOpenModalPay,
+      onClose: onCloseModalPay,
+   } = useDisclosure()
+
+   const printOrderMenuRef = useRef()
+   const printBarcodeRef = useRef()
 
    const renderStatus = (status) => {
       if (status === 'pending') {
@@ -60,7 +91,7 @@ const Order = () => {
                variant="outline"
                w="130px"
                leftIcon={<MdPrint />}
-               onClick={handlePrint}
+               onClick={handlePrintOrderMenu}
             >
                Print order
             </Button>
@@ -83,6 +114,7 @@ const Order = () => {
                   <HiCash size={20} />
                )
             }
+            onClick={status === 'preparing' ? handleDeliver : handlePay}
          >
             {status === 'preparing'
                ? 'Deliver'
@@ -95,8 +127,35 @@ const Order = () => {
       </Box>
    )
 
-   const handlePrint = useReactToPrint({
-      content: () => componentRef.current,
+   const renderDetailOrder = () => (
+      <Box p={3} boxShadow="md" borderRadius={10}>
+         {order.items?.map((item, i) => (
+            <Flex justifyContent="space-between" key={i} mb={1}>
+               <Text>{`${item.qty} ${trimString(item.product.name)}`}</Text>
+               <Text>Rp. {item.qty * item.product.price}</Text>
+            </Flex>
+         ))}
+         <Divider />
+         <Flex justifyContent="space-between" mt={1} fontWeight="bold">
+            <Text>Total</Text>
+            <Text>Rp. {order.totalPrice}</Text>
+         </Flex>
+      </Box>
+   )
+
+   const handleDeliver = () => {}
+
+   const handlePay = () => {
+      onOpenModalPay()
+   }
+
+   const handlePrintOrderMenu = useReactToPrint({
+      content: () => printOrderMenuRef.current,
+      pageStyle: pageStyle,
+   })
+
+   const handlePrintBarcode = useReactToPrint({
+      content: () => printBarcodeRef.current,
       pageStyle: pageStyle,
    })
 
@@ -115,6 +174,7 @@ const Order = () => {
    return (
       <Box w="100%" p={8} h="100%">
          <Flex direction={['column', 'row', 'row']}>
+            {/* Section Main */}
             <Box w="100%">
                <Flex
                   justifyContent="space-between"
@@ -161,7 +221,7 @@ const Order = () => {
                   </Box>
                </Flex>
 
-               {/* Table */}
+               {/* Section Table */}
                <Box overflow="auto" mt={8} boxShadow="md">
                   <Table size="md">
                      <Thead>
@@ -170,6 +230,7 @@ const Order = () => {
                            <Th>Items</Th>
                            <Th>Total</Th>
                            <Th>Author</Th>
+                           <Th>Barcode</Th>
                            <Th>Status</Th>
                         </Tr>
                      </Thead>
@@ -191,6 +252,22 @@ const Order = () => {
                               </Td>
                               <Td>Rp.{order.totalPrice}</Td>
                               <Td>{order.author.name}</Td>
+                              <Td
+                                 onClick={(e) => {
+                                    setOrder(order)
+                                    console.log(order)
+                                    e.stopPropagation()
+                                 }}
+                                 textAlign="center"
+                                 w="10px"
+                              >
+                                 <Button
+                                    variant="outline"
+                                    onClick={onOpenModalBarcode}
+                                 >
+                                    <IoMdBarcode />
+                                 </Button>
+                              </Td>
                               <Td>
                                  <Badge
                                     w="100px"
@@ -211,7 +288,7 @@ const Order = () => {
                </Box>
             </Box>
 
-            {/* Detail */}
+            {/* Section Detail */}
             <Drawer
                placement="right"
                onClose={onClose}
@@ -226,7 +303,7 @@ const Order = () => {
                      display="flex"
                      justifyContent="space-between"
                   >
-                     <Text color="black" fontWeight="bold" fontSize="2xl">
+                     <Text color="secondary" fontWeight="bold" fontSize="2xl">
                         Detail Order
                      </Text>
                      <CloseButton
@@ -238,64 +315,54 @@ const Order = () => {
                      />
                   </DrawerHeader>
                   <DrawerBody mt={3}>
-                     <Text fontSize="lg" fontWeight="bold">
-                        Items
-                     </Text>
-                     <Flex direction="column" mt={5}>
-                        {order.items?.map((item, i) => (
-                           <Box
-                              key={i}
-                              display="flex"
-                              flexDirection="row"
-                              alignItems="end"
-                              justifyContent="space-between"
-                              mb={5}
-                           >
-                              <Image
-                                 src={item.product.photo}
-                                 fallbackSrc="https://via.placeholder.com/60"
-                                 width="60px"
-                                 height="60px"
-                                 borderRadius={10}
-                                 loading="lazy"
-                              />
-                              <Flex
-                                 direction="column"
-                                 justifyContent="flex-start"
-                                 width="50%"
-                              >
-                                 <Text color="black" fontWeight="bold">
-                                    {item.product.name}
-                                 </Text>
-                                 <Text color="secondary">{item.note}</Text>
-                              </Flex>
-                              <Text color="black" fontWeight="bold">
-                                 {item.qty} Items
-                              </Text>
-                           </Box>
-                        ))}
-                     </Flex>
-
-                     {/* Detail Payment */}
-                     <Box p={3} boxShadow="md" borderRadius={10}>
-                        {order.items?.map((item, i) => (
-                           <Flex justifyContent="space-between" key={i} mb={1}>
-                              <Text>{`${item.qty} ${trimString(
-                                 item.product.name
-                              )}`}</Text>
-                              <Text>Rp. {item.qty * item.product.price}</Text>
+                     {order.status !== 'pending' && (
+                        <>
+                           {' '}
+                           <Text fontSize="lg" fontWeight="bold">
+                              Items
+                           </Text>
+                           <Flex direction="column" mt={5}>
+                              {order.items?.map((item, i) => (
+                                 <Box
+                                    key={i}
+                                    display="flex"
+                                    flexDirection="row"
+                                    alignItems="end"
+                                    justifyContent="space-between"
+                                    mb={5}
+                                 >
+                                    <Image
+                                       src={item.product.photo}
+                                       fallbackSrc="https://via.placeholder.com/60"
+                                       width="60px"
+                                       height="60px"
+                                       borderRadius={10}
+                                       loading="lazy"
+                                    />
+                                    <Flex
+                                       direction="column"
+                                       justifyContent="flex-start"
+                                       width="50%"
+                                    >
+                                       <Text fontWeight="bold">
+                                          {item.product.name}
+                                       </Text>
+                                       <Text color="secondary">
+                                          {item.note}
+                                       </Text>
+                                    </Flex>
+                                    <Text fontWeight="bold">
+                                       {item.qty} Items
+                                    </Text>
+                                 </Box>
+                              ))}
                            </Flex>
-                        ))}
-                        <Divider />
-                        <Flex
-                           justifyContent="space-between"
-                           mt={1}
-                           fontWeight="bold"
-                        >
-                           <Text>Total</Text>
-                           <Text>Rp. {order.totalPrice}</Text>
-                        </Flex>
-                     </Box>
+                        </>
+                     )}
+
+                     {/* Detail Order */}
+                     {order.status !== 'pending' && renderDetailOrder()}
+
                      {/* Section Button Action*/}
                      {order.status !== 'pending' && order.status !== 'completed'
                         ? renderButtonAction(order.status)
@@ -304,7 +371,7 @@ const Order = () => {
                      {/* Section Status */}
                      <Box
                         p={3}
-                        mt={6}
+                        mt={order.status !== 'pending' ? 6 : 0}
                         borderRadius={10}
                         textAlign="center"
                         {...renderStatus(order.status)}
@@ -316,72 +383,211 @@ const Order = () => {
                            {order.status?.toUpperCase()}
                         </Text>
                      </Box>
+                  </DrawerBody>
+               </DrawerContent>
+            </Drawer>
 
-                     {/* Print Detail Order */}
-                     <Box display="none">
+            {/* Section Print Detail Order */}
+            <Box display="none">
+               <Flex
+                  backgroundColor="gray.100"
+                  mt={3}
+                  direction="column"
+                  p={3}
+                  ref={printOrderMenuRef}
+               >
+                  <Flex alignItems="center" direction="column">
+                     <Heading color="black" size="sm" textAlign="center">
+                        WARUNK <br /> BANG JOHN
+                     </Heading>
+                     <Text fontSize="sm" mt={2}>
+                        List Pesanan id: {order.id}
+                     </Text>
+                  </Flex>
+
+                  <Box p={3} borderRadius={10} mt={5}>
+                     {order.items?.map((item, i) => (
+                        <Flex justifyContent="space-between" key={i} mb={2}>
+                           <Flex direction="column">
+                              <Text color="black" fontSize="14px">{`${
+                                 item.qty
+                              } ${trimString(item.product.name)}`}</Text>
+                              <Text ml={3} fontSize="12px" color="secondary">
+                                 {item.note}
+                              </Text>
+                           </Flex>
+                           <Text fontSize="14px">
+                              Rp. {item.qty * item.product.price}
+                           </Text>
+                        </Flex>
+                     ))}
+                     <Divider />
+                     <Flex
+                        justifyContent="space-between"
+                        mt={3}
+                        fontWeight="bold"
+                     >
+                        <Text>Total</Text>
+                        <Text fontSize="14px">Rp. {order.totalPrice}</Text>
+                     </Flex>
+                  </Box>
+               </Flex>
+            </Box>
+
+            {/* Section Modal Barcode */}
+            <Modal isOpen={isOpenModalBarcode} onClose={onCloseModalBarcode}>
+               <ModalOverlay />
+               <ModalContent>
+                  <ModalHeader>Pesanan ID: {order.id}</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                     <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                     >
                         <Flex
-                           backgroundColor="gray.100"
                            mt={3}
                            direction="column"
                            p={3}
-                           ref={componentRef}
+                           ref={printBarcodeRef}
                         >
                            <Flex alignItems="center" direction="column">
                               <Heading
                                  color="black"
-                                 size="sm"
+                                 size="md"
                                  textAlign="center"
+                                 fontWeight="bold"
                               >
                                  WARUNK <br /> BANG JOHN
                               </Heading>
-                              <Text fontSize="sm" mt={2}>
-                                 List Pesanan id: {order.id}
+                              <Text fontSize="sm" mt={2} mb={3}>
+                                 Pesanan id: {order.id}
                               </Text>
                            </Flex>
-
-                           <Box p={3} borderRadius={10} mt={5}>
-                              {order.items?.map((item, i) => (
-                                 <Flex
-                                    justifyContent="space-between"
-                                    key={i}
-                                    mb={2}
-                                 >
-                                    <Flex direction="column">
-                                       <Text color="black" fontSize="14px">{`${
-                                          item.qty
-                                       } ${trimString(
-                                          item.product.name
-                                       )}`}</Text>
-                                       <Text
-                                          ml={3}
-                                          fontSize="12px"
-                                          color="secondary"
-                                       >
-                                          {item.note}
-                                       </Text>
-                                    </Flex>
-                                    <Text fontSize="14px">
-                                       Rp. {item.qty * item.product.price}
-                                    </Text>
-                                 </Flex>
-                              ))}
-                              <Divider />
-                              <Flex
-                                 justifyContent="space-between"
-                                 mt={3}
-                                 fontWeight="bold"
-                              >
-                                 <Text>Total</Text>
-                                 <Text fontSize="14px">
-                                    Rp. {order.totalPrice}
-                                 </Text>
-                              </Flex>
+                           <Box mt={5} textAlign="center" m="auto">
+                              <QRCode
+                                 size="130"
+                                 value={`${window.location.origin}/order/${order.id}`}
+                              />
                            </Box>
+                           <Text
+                              mt={2}
+                              textAlign="center"
+                              fontWeight="bold"
+                              fontSize="sm"
+                           >{`${window.location.origin}/order/${order.id}`}</Text>
+                           <Text textAlign="center" mt={5} fontSize="sm">
+                              Silahkan scan barcode diatas <br /> dan pilih menu
+                              kesukaan anda :)
+                           </Text>
+                           <Text
+                              textAlign="center"
+                              mt={5}
+                              fontSize="md"
+                              fontWeight="bold"
+                           >
+                              Terimakasih
+                           </Text>
                         </Flex>
                      </Box>
-                  </DrawerBody>
-               </DrawerContent>
-            </Drawer>
+                  </ModalBody>
+
+                  <ModalFooter>
+                     <Button
+                        variant="solid"
+                        backgroundColor="primary"
+                        onClick={handlePrintBarcode}
+                     >
+                        Print Barcode
+                     </Button>
+                  </ModalFooter>
+               </ModalContent>
+            </Modal>
+
+            {/* Section Print Barcode */}
+            <Box position="absolute" left="50%" display="none">
+               <Flex
+                  backgroundColor="gray.100"
+                  mt={3}
+                  direction="column"
+                  p={3}
+                  ref={printBarcodeRef}
+               >
+                  <Flex alignItems="center" direction="column">
+                     <Heading color="black" size="sm" textAlign="center">
+                        WARUNK <br /> BANG JOHN
+                     </Heading>
+                     <Text fontSize="sm" mt={2}>
+                        Pesanan id: {order.id}
+                     </Text>
+                  </Flex>
+                  {order.length !== 0 && <QRCode value="hey" />}
+               </Flex>
+            </Box>
+
+            {/* Section Modal Pay */}
+            <Modal
+               initialFocusRef={initialRef}
+               isOpen={isOpenModalPay}
+               onClose={onCloseModalPay}
+            >
+               <ModalOverlay />
+               <ModalContent>
+                  <ModalHeader>PAYMENT</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody pb={6}>
+                     {renderDetailOrder()}
+                     <FormControl mt={5}>
+                        <FormLabel>Cash</FormLabel>
+                        <InputGroup>
+                           <InputLeftAddon children="Rp" />
+                           <Input
+                              ref={initialRef}
+                              type="number"
+                              placeholder="Cash"
+                              fontWeight="bold"
+                              onChange={(e) =>
+                                 setCharge(e.target.value - order.totalPrice)
+                              }
+                              onKeyDown={(e) => {
+                                 if (e.key === 'Enter' && charge > 0) {
+                                    console.log('do validate')
+                                 }
+                              }}
+                              focusBorderColor="none"
+                           />
+                        </InputGroup>
+                     </FormControl>
+
+                     <FormControl mt={4}>
+                        <FormLabel>Charge</FormLabel>
+                        <InputGroup>
+                           <InputLeftAddon children="Rp" />
+                           <Input
+                              type="number"
+                              placeholder="Charge"
+                              disabled
+                              value={charge}
+                              color="black"
+                              fontWeight="bold"
+                           />
+                        </InputGroup>
+                     </FormControl>
+                  </ModalBody>
+
+                  <ModalFooter>
+                     <Button
+                        backgroundColor="primary"
+                        mr={3}
+                        px={6}
+                        disabled={charge < 0}
+                     >
+                        PAY
+                     </Button>
+                  </ModalFooter>
+               </ModalContent>
+            </Modal>
          </Flex>
       </Box>
    )
