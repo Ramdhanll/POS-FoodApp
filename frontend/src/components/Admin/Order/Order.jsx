@@ -42,6 +42,7 @@ const Order = () => {
    const [active, setActive] = useState(null)
    const [order, setOrder] = useState([])
    const [charge, setCharge] = useState(0)
+   const [cash, setCash] = useState(0)
    const initialRef = useRef()
    const { isOpen, onOpen, onClose } = useDisclosure()
    const {
@@ -57,6 +58,7 @@ const Order = () => {
 
    const printOrderMenuRef = useRef()
    const printBarcodeRef = useRef()
+   const printPaymentRef = useRef()
 
    const renderStatus = (status) => {
       if (status === 'pending') {
@@ -146,8 +148,14 @@ const Order = () => {
    const handleDeliver = () => {}
 
    const handlePay = () => {
+      setCharge(cash - order.totalPrice)
       onOpenModalPay()
    }
+
+   const handlePrintPayment = useReactToPrint({
+      content: () => printPaymentRef.current,
+      pageStyle: pageStyle,
+   })
 
    const handlePrintOrderMenu = useReactToPrint({
       content: () => printOrderMenuRef.current,
@@ -293,7 +301,12 @@ const Order = () => {
                placement="right"
                onClose={onClose}
                isOpen={isOpen}
-               onOverlayClick={() => setActive(null)}
+               onOverlayClick={() => {
+                  setOrder([])
+                  setCash(0)
+                  setCharge(0)
+                  setActive(null)
+               }}
                size="xs"
             >
                <DrawerOverlay />
@@ -387,6 +400,63 @@ const Order = () => {
                </DrawerContent>
             </Drawer>
 
+            {/* Section Print Payment */}
+            <Box display="none">
+               <Flex mt={3} direction="column" p={3} ref={printPaymentRef}>
+                  <Flex alignItems="center" direction="column">
+                     <Heading
+                        color="black"
+                        size="sm"
+                        textAlign="center"
+                        fontWeight="bold"
+                     >
+                        WARUNK <br /> BANG JOHN
+                     </Heading>
+                     <Text fontSize="sm" mt={2} mb={3}>
+                        Pesanan id: {order.id}
+                     </Text>
+                  </Flex>
+                  <Box p={3} borderRadius={10}>
+                     {order.items?.map((item, i) => (
+                        <Flex justifyContent="space-between" key={i} mb={2}>
+                           <Flex direction="column">
+                              <Text color="black" fontSize="14px">{`${
+                                 item.qty
+                              } ${trimString(item.product.name)}`}</Text>
+                              <Text ml={3} fontSize="12px" color="secondary">
+                                 {item.note}
+                              </Text>
+                           </Flex>
+                           <Text fontSize="12px">
+                              Rp. {item.qty * item.product.price}
+                           </Text>
+                        </Flex>
+                     ))}
+                     <Divider />
+                     <Flex justifyContent="space-between" mt={3}>
+                        <Text fontSize="12px">Total</Text>
+                        <Text fontSize="12px">Rp. {order.totalPrice}</Text>
+                     </Flex>
+                     <Flex justifyContent="space-between" mt={2}>
+                        <Text fontSize="12px">Cash</Text>
+                        <Text fontSize="12px">Rp. {cash}</Text>
+                     </Flex>
+                     <Flex justifyContent="space-between" mt={2}>
+                        <Text fontSize="12px">Charge</Text>
+                        <Text fontSize="12px">Rp. {charge}</Text>
+                     </Flex>
+                  </Box>
+                  <Text
+                     textAlign="center"
+                     mt={5}
+                     fontSize="sm"
+                     fontWeight="bold"
+                  >
+                     Terimakasih <br /> Segera Datang Kembali :)
+                  </Text>
+               </Flex>
+            </Box>
+
             {/* Section Print Detail Order */}
             <Box display="none">
                <Flex
@@ -441,6 +511,7 @@ const Order = () => {
                   <ModalHeader>Pesanan ID: {order.id}</ModalHeader>
                   <ModalCloseButton />
                   <ModalBody>
+                     {/* Section Print Barcode */}
                      <Box
                         display="flex"
                         alignItems="center"
@@ -467,7 +538,7 @@ const Order = () => {
                            </Flex>
                            <Box mt={5} textAlign="center" m="auto">
                               <QRCode
-                                 size="130"
+                                 size={130}
                                  value={`${window.location.origin}/order/${order.id}`}
                               />
                            </Box>
@@ -505,32 +576,15 @@ const Order = () => {
                </ModalContent>
             </Modal>
 
-            {/* Section Print Barcode */}
-            <Box position="absolute" left="50%" display="none">
-               <Flex
-                  backgroundColor="gray.100"
-                  mt={3}
-                  direction="column"
-                  p={3}
-                  ref={printBarcodeRef}
-               >
-                  <Flex alignItems="center" direction="column">
-                     <Heading color="black" size="sm" textAlign="center">
-                        WARUNK <br /> BANG JOHN
-                     </Heading>
-                     <Text fontSize="sm" mt={2}>
-                        Pesanan id: {order.id}
-                     </Text>
-                  </Flex>
-                  {order.length !== 0 && <QRCode value="hey" />}
-               </Flex>
-            </Box>
-
-            {/* Section Modal Pay */}
+            {/* Section Modal Payment */}
             <Modal
                initialFocusRef={initialRef}
                isOpen={isOpenModalPay}
-               onClose={onCloseModalPay}
+               onClose={() => {
+                  setCharge(0)
+                  setCash(0)
+                  onCloseModalPay()
+               }}
             >
                <ModalOverlay />
                <ModalContent>
@@ -547,13 +601,13 @@ const Order = () => {
                               type="number"
                               placeholder="Cash"
                               fontWeight="bold"
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                 setCash(e.target.value)
                                  setCharge(e.target.value - order.totalPrice)
-                              }
+                              }}
                               onKeyDown={(e) => {
-                                 if (e.key === 'Enter' && charge > 0) {
-                                    console.log('do validate')
-                                 }
+                                 if (e.key === 'Enter' && charge >= 0)
+                                    handlePrintPayment()
                               }}
                               focusBorderColor="none"
                            />
