@@ -1,6 +1,6 @@
 import { Avatar } from '@chakra-ui/avatar'
 import { Button } from '@chakra-ui/button'
-import { Box, Flex, Link, Text, Wrap, WrapItem } from '@chakra-ui/layout'
+import { Badge, Box, Flex, Link, Text, Wrap, WrapItem } from '@chakra-ui/layout'
 import {
    MdDashboard,
    MdShoppingCart,
@@ -14,7 +14,7 @@ import useWindowDimensions from '../../../utils/useWindowDimension'
 import { COLORS } from '../../../constants'
 import { useHistory, useLocation } from 'react-router'
 
-const Sidebar = ({ openSidebar }) => {
+const Sidebar = ({ openSidebar, bg }) => {
    const History = useHistory()
    const url = useLocation()
    const [active, setActive] = useState(null)
@@ -125,7 +125,7 @@ const Sidebar = ({ openSidebar }) => {
                            active === item.key ? COLORS.primary : '#D9D9D9'
                         }
                      >
-                        {<item.icon />}
+                        {<item.icon color={bg ? 'black' : ''} />}
                      </Box>
 
                      <Text
@@ -135,6 +135,17 @@ const Sidebar = ({ openSidebar }) => {
                      >
                         {item.name}
                      </Text>
+                     {item.name === 'Order' && (
+                        <Badge
+                           borderRadius="full"
+                           ml="auto"
+                           backgroundColor="primary"
+                           fontWeight="black"
+                           fontSize="xs"
+                        >
+                           3
+                        </Badge>
+                     )}
                   </Flex>
                </Link>
             ))}
@@ -196,11 +207,13 @@ const Sidebar = ({ openSidebar }) => {
          display={[
             openSidebar ? 'flex' : 'none',
             openSidebar ? 'flex' : 'none',
+            openSidebar ? 'flex' : 'none',
             'flex',
          ]}
-         position={{ base: 'absolute', md: 'inherit', lg: 'inherit' }}
+         // position={{ base: 'absolute', md: 'inherit', lg: 'inherit' }}
+         position={['absolute', 'absolute', 'absolute', 'inherit']}
          transition="display 0.5s ease-out"
-         backgroundColor="white"
+         backgroundColor={bg}
          p={3}
          minW={['200px', '230px', '260px']}
          h={height - 45} // 45 from height navbar
