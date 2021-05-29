@@ -4,7 +4,7 @@ import React from 'react'
 const Dashboard = () => {
    return (
       <>
-         <Box p={8} w={['100%', '100%', '100%']} h="100%">
+         <Box p={8} w={'100%'} h="100%">
             <Heading color="secondary" size="lg">
                Overview
             </Heading>
@@ -18,7 +18,7 @@ const Dashboard = () => {
             >
                <Box
                   // w="300px"
-                  w={['300px', '200px', '300px']}
+                  w={['300px', '180px', '300px']}
                   // h="120px"
                   h={['100px', '120px', '120px']}
                   boxShadow="lg"

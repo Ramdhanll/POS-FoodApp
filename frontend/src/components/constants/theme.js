@@ -12,6 +12,6 @@ export const COLORS = {
    statusPreparing: '#FFEFC6',
    textPreparing: '#E0A200',
 
-   statusDelivering: '#BAC6E6',
-   textDelivering: '#1842AC',
+   statusDelivered: '#BAC6E6',
+   textDelivered: '#1842AC',
 }

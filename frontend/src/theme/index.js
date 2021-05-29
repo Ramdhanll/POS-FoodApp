@@ -6,6 +6,10 @@ const theme = extendTheme({
       secondary: '#8A8A8A',
       black: '#343434',
    },
+   config: {
+      initialColorMode: 'light',
+      useSystemColorMode: false,
+   },
 })
 
 export default theme

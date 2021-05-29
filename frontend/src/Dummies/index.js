@@ -18,7 +18,7 @@ export const products = [
    },
    {
       id: 2,
-      name: 'Mie Goreng',
+      name: 'Mie Goreng Mampus (1-10)',
       photo: mieGoreng,
       weight: '10g',
       category: 'makanan',
@@ -42,7 +42,7 @@ export const products = [
    },
    {
       id: 5,
-      name: 'Minum 1',
+      name: 'Red Valvet',
       photo: drink1,
       weight: '17g',
       category: 'minuman',
@@ -60,7 +60,7 @@ export const products = [
 
    {
       id: 7,
-      name: 'Minum 3',
+      name: 'Purple ',
       photo: drink3,
       weight: '17g',
       category: 'minuman',
@@ -71,19 +71,10 @@ export const products = [
 export const orders = [
    {
       id: 1,
-      items: [
-         {
-            product: products[0],
-            qty: 1,
-         },
-         {
-            product: products[3],
-            qty: 2,
-         },
-      ],
+      items: [],
       author: { name: 'Ramadhani', role: 'Super Admin' },
       status: 'pending',
-      totalPrice: products[0].price * 1 + products[3].price * 2,
+      totalPrice: 0,
    },
    {
       id: 2,
@@ -91,14 +82,52 @@ export const orders = [
          {
             product: products[1],
             qty: 1,
+            note: 'Level 10',
          },
          {
             product: products[2],
             qty: 2,
+            note: 'Tidak ada catatan',
          },
       ],
       author: { name: 'Ramadhani', role: 'Super Admin' },
-      status: 'success',
+      status: 'completed',
       totalPrice: products[1].price * 1 + products[3].price * 2,
+   },
+   {
+      id: 3,
+      items: [
+         {
+            product: products[4],
+            qty: 1,
+            note: 'Tidak ada catatan',
+         },
+         {
+            product: products[6],
+            qty: 2,
+            note: 'Tidak ada catatan',
+         },
+      ],
+      author: { name: 'Ramadhani', role: 'Super Admin' },
+      status: 'preparing',
+      totalPrice: products[4].price * 1 + products[6].price * 2,
+   },
+   {
+      id: 4,
+      items: [
+         {
+            product: products[5],
+            qty: 1,
+            note: 'Tidak ada catatan',
+         },
+         {
+            product: products[6],
+            qty: 2,
+            note: 'Tidak ada catatan',
+         },
+      ],
+      author: { name: 'Ramadhani', role: 'Super Admin' },
+      status: 'delivered',
+      totalPrice: products[5].price * 1 + products[6].price * 2,
    },
 ]

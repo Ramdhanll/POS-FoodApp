@@ -7423,6 +7423,11 @@ js-yaml@^3.13.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
+jsbarcode@^3.8.0:
+  version "3.11.4"
+  resolved "https://registry.yarnpkg.com/jsbarcode/-/jsbarcode-3.11.4.tgz#00dfe90329af94269ac0808b0858206aa3a71416"
+  integrity sha512-PHtad17lOl6LOLGK20k5I6P7MabiyHaJY5u5N5TlzC6ZunOR+yFnFnRUoqqOefrYPqO2nuJ1weHzG8B7YYEnHg==
+
 jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
@@ -9779,6 +9784,14 @@ react-app-polyfill@^2.0.0:
     regenerator-runtime "^0.13.7"
     whatwg-fetch "^3.4.1"
 
+react-barcode@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/react-barcode/-/react-barcode-1.4.0.tgz#ebc85ff1b8b49ac4b947b7f3745d684c6c363902"
+  integrity sha512-xDxIc9WUTQPMcwc3kbCVsjh03WiPyynms9OSdsNSh2AAgB6XqMiy9hYWkCNHgdNdvurkvKB6hm25AZHXyQfvlQ==
+  dependencies:
+    jsbarcode "^3.8.0"
+    prop-types "^15.6.2"
+
 react-clientside-effect@^1.2.2:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/react-clientside-effect/-/react-clientside-effect-1.2.5.tgz#e2c4dc3c9ee109f642fac4f5b6e9bf5bcd2219a3"
@@ -9846,6 +9859,11 @@ react-focus-lock@2.5.0:
     react-clientside-effect "^1.2.2"
     use-callback-ref "^1.2.1"
     use-sidecar "^1.0.1"
+
+react-icons@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.2.0.tgz#6dda80c8a8f338ff96a1851424d63083282630d0"
+  integrity sha512-rmzEDFt+AVXRzD7zDE21gcxyBizD/3NqjbX6cmViAgdqfJ2UiLer8927/QhhrXQV7dEj/1EGuOTPp7JnLYVJKQ==
 
 react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1:
   version "16.13.1"
@@ -9984,6 +10002,13 @@ react-style-singleton@^2.1.0:
     get-nonce "^1.0.0"
     invariant "^2.2.4"
     tslib "^1.0.0"
+
+react-to-print@^2.12.4:
+  version "2.12.4"
+  resolved "https://registry.yarnpkg.com/react-to-print/-/react-to-print-2.12.4.tgz#d9ed1447719c321798896040b0945a5c73a8f0c1"
+  integrity sha512-OM0nttpZMv3NV+z9FDRyyJIPRHlz05NzlTFoUKPREq+Bq4CnojwzUtB2qNzpwYerXPFzgYXR4/IT1W1mk9s9HA==
+  dependencies:
+    prop-types "^15.7.2"
 
 react@^17.0.2:
   version "17.0.2"

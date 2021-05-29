@@ -1,3 +1,4 @@
+import { useColorModeValue } from '@chakra-ui/color-mode'
 import { Flex } from '@chakra-ui/layout'
 import React, { useState } from 'react'
 import { Route } from 'react-router'
@@ -14,6 +15,8 @@ import Sidebar from './common/Sidebar/Sidebar'
 
 const Admin = () => {
    const [openSidebar, setOpenSidebar] = useState(false)
+   const bg = useColorModeValue('#fff', '#1A202C')
+   const color = useColorModeValue('white', 'gray.800')
 
    const handlerSidebar = () => {
       setOpenSidebar(!openSidebar)
@@ -23,8 +26,12 @@ const Admin = () => {
       <div style={{ height: '100vh' }}>
          <Navbar handlerSidebar={handlerSidebar} />
          <Flex>
-            <Sidebar openSidebar={openSidebar} />
-            <Flex w="100%" onClick={() => openSidebar && setOpenSidebar(false)}>
+            <Sidebar openSidebar={openSidebar} bg={bg} />
+            <Flex
+               w="100%"
+               onClick={() => openSidebar && setOpenSidebar(false)}
+               bg={bg}
+            >
                <Route path="/admin" component={AdminDashboard} exact />
                <Route path="/admin/order" component={AdminOrder} />
                <Route path="/admin/products" component={AdminProducts} exact />
