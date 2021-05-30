@@ -1,7 +1,4 @@
-import React, { useRef, useState } from 'react'
-import { useReactToPrint } from 'react-to-print'
-import QRCode from 'react-qr-code'
-import { LazyLoadImage } from 'react-lazy-load-image-component'
+import React, { useState } from 'react'
 import {
    Button,
    CloseButton,
@@ -11,6 +8,7 @@ import {
    DrawerHeader,
    DrawerOverlay,
    FormControl,
+   FormHelperText,
    FormLabel,
    Image,
    Modal,
@@ -23,20 +21,12 @@ import {
    useDisclosure,
 } from '@chakra-ui/react'
 import photo150 from '../../../Images/sample150.png'
-import {
-   Input,
-   InputGroup,
-   InputLeftAddon,
-   InputLeftElement,
-} from '@chakra-ui/input'
-import { Badge, Box, Divider, Flex, Heading, Text } from '@chakra-ui/layout'
+import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input'
+import { Box, Flex, Heading, Stack, Text } from '@chakra-ui/layout'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table'
 import { Select } from '@chakra-ui/select'
-import { MdSearch, MdPrint } from 'react-icons/md'
-import { FaTelegramPlane } from 'react-icons/fa'
-import { IoMdBarcode } from 'react-icons/io'
-import { HiCash } from 'react-icons/hi'
-import { orders, products } from '../../../Dummies/'
+import { MdSearch } from 'react-icons/md'
+import { products } from '../../../Dummies/'
 import { COLORS } from '../../constants'
 import Pagination from '../common/Pagination/Pagination'
 
@@ -44,9 +34,6 @@ const Products = () => {
    const [active, setActive] = useState(null)
    const [product, setProduct] = useState([])
    const [isModalAdd, setIsModalAdd] = useState(true)
-   const [charge, setCharge] = useState(0)
-   const [cash, setCash] = useState(0)
-   const initialRef = useRef()
    const { isOpen, onOpen, onClose } = useDisclosure()
 
    const {
@@ -54,10 +41,6 @@ const Products = () => {
       onOpen: onOpenModalProduct,
       onClose: onCloseModalProduct,
    } = useDisclosure()
-
-   const printOrderMenuRef = useRef()
-   const printBarcodeRef = useRef()
-   const printPaymentRef = useRef()
 
    const handleModalProduct = ({ isAdd }) => {
       if (isAdd) {
@@ -73,12 +56,6 @@ const Products = () => {
       setActive(product.id)
       setProduct(product)
       onOpen()
-   }
-
-   const trimString = (name) => {
-      if (name.length > 16) return name.substring(0, 16) + '...'
-
-      return name
    }
 
    return (
@@ -311,7 +288,52 @@ const Products = () => {
                   {isModalAdd ? 'Add Product' : 'Edit Product'}
                </ModalHeader>
                <ModalCloseButton _focus={{ outline: 'none' }} />
-               <ModalBody>Modal Body</ModalBody>
+               <ModalBody>
+                  <Stack spacing={4}>
+                     <FormControl id="name">
+                        <FormLabel mb={2}>Photo</FormLabel>
+                        <Input type="file" variant="unstyled" />
+                        <FormHelperText color="red">
+                           We'll never share your email.
+                        </FormHelperText>
+                     </FormControl>
+                     <FormControl id="name">
+                        <FormLabel mb={-1}>Name</FormLabel>
+                        <Input type="name" variant="flushed" />
+                        <FormHelperText color="red">
+                           We'll never share your email.
+                        </FormHelperText>
+                     </FormControl>
+                     <FormControl id="weight">
+                        <FormLabel mb={-1}>weight</FormLabel>
+                        <Input type="weight" variant="flushed" />
+                        <FormHelperText>
+                           We'll never share your email.
+                        </FormHelperText>
+                     </FormControl>
+                     <FormControl id="category">
+                        <FormLabel mb={-1}>category</FormLabel>
+                        <Input type="category" variant="flushed" />
+                        <FormHelperText>
+                           We'll never share your email.
+                        </FormHelperText>
+                     </FormControl>
+                     <FormControl id="qty">
+                        <FormLabel mb={-1}>qty</FormLabel>
+                        <Input type="qty" variant="flushed" />
+                        <FormHelperText>
+                           We'll never share your email.
+                        </FormHelperText>
+                     </FormControl>
+                     <FormControl id="price">
+                        <FormLabel mb={-1}>price</FormLabel>
+                        <Input type="price" variant="flushed" />
+                        <FormHelperText>
+                           We'll never share your email.
+                        </FormHelperText>
+                     </FormControl>
+                  </Stack>
+               </ModalBody>
                <ModalFooter>
                   <Button variant="solid" backgroundColor="primary">
                      {isModalAdd ? 'Save' : 'Update'}
