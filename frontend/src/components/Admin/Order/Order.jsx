@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react'
 import { useReactToPrint } from 'react-to-print'
-import Barcode from 'react-barcode'
 import QRCode from 'react-qr-code'
 import {
    Button,
@@ -37,6 +36,7 @@ import { IoMdBarcode } from 'react-icons/io'
 import { HiCash } from 'react-icons/hi'
 import { orders } from '../../../Dummies/'
 import { COLORS } from '../../constants'
+import Pagination from '../common/Pagination/Pagination'
 
 const Order = () => {
    const [active, setActive] = useState(null)
@@ -243,56 +243,84 @@ const Order = () => {
                         </Tr>
                      </Thead>
                      <Tbody>
-                        {orders.map((order) => (
-                           <Tr
-                              key={order.id}
-                              onClick={() => handlerDetailorder(order)}
-                              cursor="pointer"
-                              _hover={{
-                                 backgroundColor: '#BABABA',
-                              }}
-                              backgroundColor={active === order.id && '#d2d2d2'}
-                           >
-                              <Td>{order.id}</Td>
-                              <Td>
-                                 {order.items.reduce((a, b) => a + b.qty, 0)}{' '}
-                                 Items
-                              </Td>
-                              <Td>Rp.{order.totalPrice}</Td>
-                              <Td>{order.author.name}</Td>
-                              <Td
-                                 onClick={(e) => {
-                                    setOrder(order)
-                                    console.log(order)
-                                    e.stopPropagation()
+                        {orders
+                           .filter((order) => order.status !== 'completed')
+                           .map((order) => (
+                              <Tr
+                                 key={order.id}
+                                 onClick={() => handlerDetailorder(order)}
+                                 cursor="pointer"
+                                 _hover={{
+                                    backgroundColor: '#BABABA',
                                  }}
-                                 textAlign="center"
-                                 w="10px"
+                                 backgroundColor={
+                                    active === order.id && '#d2d2d2'
+                                 }
                               >
-                                 <Button
-                                    variant="outline"
-                                    onClick={onOpenModalBarcode}
-                                 >
-                                    <IoMdBarcode />
-                                 </Button>
-                              </Td>
-                              <Td>
-                                 <Badge
-                                    w="100px"
-                                    variant="solid"
-                                    paddingX={3}
-                                    paddingY="2px"
-                                    borderRadius={10}
+                                 <Td>{order.id}</Td>
+                                 <Td>
+                                    {order.items.reduce((a, b) => a + b.qty, 0)}{' '}
+                                    Items
+                                 </Td>
+                                 <Td>Rp.{order.totalPrice}</Td>
+                                 <Td>{order.author.name}</Td>
+                                 <Td
+                                    onClick={(e) => {
+                                       setOrder(order)
+                                       e.stopPropagation()
+                                    }}
                                     textAlign="center"
-                                    {...renderStatus(order.status)}
+                                    w="10px"
                                  >
-                                    {order.status}
-                                 </Badge>
-                              </Td>
-                           </Tr>
-                        ))}
+                                    <Button
+                                       variant="outline"
+                                       onClick={onOpenModalBarcode}
+                                       _focus={{ outline: 'none' }}
+                                    >
+                                       <IoMdBarcode />
+                                    </Button>
+                                 </Td>
+                                 <Td>
+                                    <Badge
+                                       w="100px"
+                                       variant="solid"
+                                       paddingX={3}
+                                       paddingY="2px"
+                                       borderRadius={10}
+                                       textAlign="center"
+                                       {...renderStatus(order.status)}
+                                    >
+                                       {order.status}
+                                    </Badge>
+                                 </Td>
+                              </Tr>
+                           ))}
                      </Tbody>
                   </Table>
+               </Box>
+
+               {/* Section add n pagination */}
+               <Box
+                  mt={5}
+                  display="flex"
+                  justifyContent="space-between"
+                  // alignItems="center"
+                  flexDirection={['column', 'row', 'row', 'row']}
+               >
+                  {/* Sectionn Add Order */}
+                  <Button
+                     variant="solid"
+                     backgroundColor="primary"
+                     fontSize="sm"
+                     boxShadow="lg"
+                     _hover={{
+                        backgroundColor: '#f0deab',
+                     }}
+                  >
+                     Add Order
+                  </Button>
+                  {/* Section Pagination */}
+                  <Pagination />
                </Box>
             </Box>
 
@@ -325,6 +353,7 @@ const Order = () => {
                            setActive(null)
                            onClose()
                         }}
+                        _focus={{ outline: 'none' }}
                      />
                   </DrawerHeader>
                   <DrawerBody mt={3}>
@@ -334,7 +363,26 @@ const Order = () => {
                            <Text fontSize="lg" fontWeight="bold">
                               Items
                            </Text>
-                           <Flex direction="column" mt={5}>
+                           <Flex
+                              direction="column"
+                              mt={5}
+                              pr={1}
+                              overflow="auto"
+                              maxH="200px"
+                              css={{
+                                 '&::-webkit-scrollbar': {
+                                    width: '1.2px',
+                                 },
+                                 '&::-webkit-scrollbar-track': {
+                                    width: '1px',
+                                 },
+                                 '&::-webkit-scrollbar-thumb': {
+                                    // background: COLORS.secondary,
+                                    background: 'white',
+                                    borderRadius: '24px',
+                                 },
+                              }}
+                           >
                               {order.items?.map((item, i) => (
                                  <Box
                                     key={i}
@@ -418,14 +466,11 @@ const Order = () => {
                   </Flex>
                   <Box p={3} borderRadius={10}>
                      {order.items?.map((item, i) => (
-                        <Flex justifyContent="space-between" key={i} mb={2}>
+                        <Flex justifyContent="space-between" key={i} mb={1}>
                            <Flex direction="column">
-                              <Text color="black" fontSize="14px">{`${
+                              <Text color="black" fontSize="12px">{`${
                                  item.qty
                               } ${trimString(item.product.name)}`}</Text>
-                              <Text ml={3} fontSize="12px" color="secondary">
-                                 {item.note}
-                              </Text>
                            </Flex>
                            <Text fontSize="12px">
                               Rp. {item.qty * item.product.price}
@@ -437,11 +482,11 @@ const Order = () => {
                         <Text fontSize="12px">Total</Text>
                         <Text fontSize="12px">Rp. {order.totalPrice}</Text>
                      </Flex>
-                     <Flex justifyContent="space-between" mt={2}>
+                     <Flex justifyContent="space-between" mt={1}>
                         <Text fontSize="12px">Cash</Text>
                         <Text fontSize="12px">Rp. {cash}</Text>
                      </Flex>
-                     <Flex justifyContent="space-between" mt={2}>
+                     <Flex justifyContent="space-between" mt={1}>
                         <Text fontSize="12px">Charge</Text>
                         <Text fontSize="12px">Rp. {charge}</Text>
                      </Flex>
@@ -509,7 +554,7 @@ const Order = () => {
                <ModalOverlay />
                <ModalContent>
                   <ModalHeader>Pesanan ID: {order.id}</ModalHeader>
-                  <ModalCloseButton />
+                  <ModalCloseButton _focus={{ outline: 'none' }} />
                   <ModalBody>
                      {/* Section Print Barcode */}
                      <Box
@@ -636,6 +681,7 @@ const Order = () => {
                         mr={3}
                         px={6}
                         disabled={charge < 0}
+                        onClick={handlePrintPayment}
                      >
                         PAY
                      </Button>
