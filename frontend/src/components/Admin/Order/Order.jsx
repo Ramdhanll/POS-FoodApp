@@ -324,7 +324,7 @@ const Order = () => {
                </Box>
             </Box>
 
-            {/* Section Detail */}
+            {/* Section Drawer Detail */}
             <Drawer
                placement="right"
                onClose={onClose}

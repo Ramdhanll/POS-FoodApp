@@ -9,5 +9,7 @@ export { default as AdminProducts } from './Admin/Products/Products'
 export { default as AdminHistory } from './Admin/History/History'
 export { default as AdminAccounts } from './Admin/Accounts/Accounts'
 export { default as AdminReport } from './Admin/Report/Report'
+export { default as Login } from './Admin/Login/Login'
+export { default as Register } from './Admin/Register/Register'
 
 export { default as PageNotFound } from './utils/PageNotFound'

@@ -1,22 +1,20 @@
 import { Avatar } from '@chakra-ui/avatar'
 import { Button } from '@chakra-ui/button'
-import { Badge, Box, Flex, Link, Text, Wrap, WrapItem } from '@chakra-ui/layout'
+import { Badge, Box, Flex, Text, Wrap, WrapItem } from '@chakra-ui/layout'
 import {
    MdDashboard,
    MdShoppingCart,
    MdHistory,
    MdPeople,
-   MdBook,
 } from 'react-icons/md'
 import { GiOpenedFoodCan } from 'react-icons/gi'
 import React, { useEffect, useMemo, useState } from 'react'
 import useWindowDimensions from '../../../utils/useWindowDimension'
 import { COLORS } from '../../../constants'
-import { useHistory, useLocation } from 'react-router'
+import { NavLink, useLocation } from 'react-router-dom'
 
 const Sidebar = ({ openSidebar, bg }) => {
-   const History = useHistory()
-   const url = useLocation()
+   const { pathname } = useLocation()
    const [active, setActive] = useState(null)
    const { height } = useWindowDimensions()
    const navMenu = useMemo(
@@ -31,7 +29,7 @@ const Sidebar = ({ openSidebar, bg }) => {
             key: 1,
             icon: MdShoppingCart,
             path: '/admin/order',
-            name: 'Order',
+            name: 'Orders',
          },
          {
             key: 2,
@@ -39,12 +37,12 @@ const Sidebar = ({ openSidebar, bg }) => {
             path: '/admin/products',
             name: 'Products',
          },
-         {
-            key: 3,
-            icon: MdHistory,
-            path: '/admin/history',
-            name: 'History',
-         },
+         // {
+         //    key: 3,
+         //    icon: MdHistory,
+         //    path: '/admin/history',
+         //    name: 'History',
+         // },
       ],
       []
    )
@@ -52,41 +50,32 @@ const Sidebar = ({ openSidebar, bg }) => {
    const navOthers = useMemo(
       () => [
          {
-            key: 4,
+            key: 3,
             icon: MdPeople,
             path: '/admin/accounts',
-            name: 'Account',
+            name: 'Accounts',
          },
          {
-            key: 5,
-            icon: MdBook,
-            path: '/admin/report',
-            name: 'Report',
+            key: 4,
+            icon: MdHistory,
+            path: '/admin/history',
+            name: 'History',
          },
+         // {
+         //    key: 5,
+         //    icon: MdBook,
+         //    path: '/admin/report',
+         //    name: 'Report',
+         // },
       ],
       []
    )
 
    useEffect(() => {
-      const { pathname } = url
-      const filterUrl =
-         pathname.charAt(pathname.length - 1) === '/'
-            ? pathname.slice(0, -1)
-            : pathname
+      const nav = [...navMenu, ...navOthers].filter((c) => c.path === pathname)
 
-      const nav = [...navMenu, ...navOthers].filter(
-         (nav) => nav.path === filterUrl
-      )
-
-      if (nav.length !== 0) {
-         setActive(nav[0].key)
-      }
-   }, [url, navMenu, navOthers])
-
-   const handlerNavigation = (goto, i) => {
-      setActive(i)
-      History.push(goto)
-   }
+      setActive(nav[0].key)
+   }, [navMenu, pathname, navOthers])
 
    const Navigation = () => (
       <>
@@ -96,10 +85,9 @@ const Sidebar = ({ openSidebar, bg }) => {
             </Text>
 
             {navMenu.map((item) => (
-               <Link
-                  to="/"
+               <NavLink
+                  to={item.path}
                   style={{ textDecoration: 'none' }}
-                  onClick={() => handlerNavigation(item.path, item.key)}
                   key={item.key}
                >
                   <Flex
@@ -135,7 +123,7 @@ const Sidebar = ({ openSidebar, bg }) => {
                      >
                         {item.name}
                      </Text>
-                     {item.name === 'Order' && (
+                     {item.name === 'Orders' && (
                         <Badge
                            borderRadius="full"
                            ml="auto"
@@ -147,7 +135,7 @@ const Sidebar = ({ openSidebar, bg }) => {
                         </Badge>
                      )}
                   </Flex>
-               </Link>
+               </NavLink>
             ))}
 
             <Text fontSize="sm" color="secondary" fontWeight="light" mt={5}>
@@ -155,10 +143,9 @@ const Sidebar = ({ openSidebar, bg }) => {
             </Text>
 
             {navOthers.map((item) => (
-               <Link
-                  to="/"
+               <NavLink
+                  to={item.path}
                   style={{ textDecoration: 'none' }}
-                  onClick={() => handlerNavigation(item.path, item.key)}
                   key={item.key}
                >
                   <Flex
@@ -195,7 +182,7 @@ const Sidebar = ({ openSidebar, bg }) => {
                         {item.name}
                      </Text>
                   </Flex>
-               </Link>
+               </NavLink>
             ))}
          </Flex>
       </>

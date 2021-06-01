@@ -34,10 +34,10 @@ const Admin = () => {
             >
                <Route path="/admin" component={AdminDashboard} exact />
                <Route path="/admin/order" component={AdminOrder} />
-               <Route path="/admin/products" component={AdminProducts} exact />
-               <Route path="/admin/history" component={AdminHistory} exact />
-               <Route path="/admin/accounts" component={AdminAccounts} exact />
-               <Route path="/admin/report" component={AdminReport} exact />
+               <Route path="/admin/products" component={AdminProducts} />
+               <Route path="/admin/history" component={AdminHistory} />
+               <Route path="/admin/accounts" component={AdminAccounts} />
+               <Route path="/admin/report" component={AdminReport} />
             </Flex>
          </Flex>
       </div>

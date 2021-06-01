@@ -251,8 +251,9 @@ const Products = () => {
                            <Button
                               variant="outline"
                               w="47%"
+                              borderWidth="2px"
                               colorScheme="gray"
-                              boxShadow="md"
+                              boxShadow="lg"
                               _focus={{
                                  outline: 'none',
                               }}
@@ -266,7 +267,7 @@ const Products = () => {
                               w="47%"
                               variant="solid"
                               colorScheme="red"
-                              boxShadow="md"
+                              boxShadow="lg"
                               _focus={{
                                  outline: 'none',
                               }}

@@ -4,16 +4,15 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 import { ChakraProvider } from '@chakra-ui/react'
 import theme from './theme'
 
-import { Admin, Home, Order, PageNotFound } from './components'
+import { Admin, Home, Login, Order } from './components'
 
 const App = () => {
    const Routing = () => (
       <>
          <Route path="/" component={Home} exact />
-         <Route path="/order" component={Order} />
          <Route path="/admin" component={Admin} />
-
-         {/* <Route path="*" exact={true} component={PageNotFound} /> */}
+         <Route path="/order/:id" component={Order} />
+         <Route path="/login" component={Login} />
       </>
    )
 

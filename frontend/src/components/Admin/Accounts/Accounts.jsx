@@ -300,7 +300,7 @@ const Accounts = () => {
                         </FormHelperText>
                      </FormControl>
                      <FormControl id="password">
-                        <FormLabel mb={-1}>password</FormLabel>
+                        <FormLabel mb={-1}>Password</FormLabel>
                         <Input type="password" variant="flushed" />
                         <FormHelperText>
                            We'll never share your email.

@@ -1,9 +1,13 @@
+* {
+   -webkit-tap-highlight-color: transparent;
+}
+
 body,
 html {
    height: '100%';
 }
 
 .App {
+   height: '100%';
    font-family: 'Roboto', sans-serif;
-   background-color: #fff;
 }
