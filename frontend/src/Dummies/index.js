@@ -9,8 +9,8 @@ import drink3 from './images/drink-3.jpg'
 
 const today = new Date()
 var date = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`
-var time =
-   today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds()
+// var time =
+//    today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds()
 
 export const products = [
    {
