@@ -1,15 +1,22 @@
 import express from 'express'
-import { login, register, seed } from '../controllers/userController.js'
+import {
+   login,
+   register,
+   seed,
+   userDetail,
+} from '../controllers/userController.js'
 import { body } from 'express-validator'
 import User from '../models/userModel.js'
+import isAuth from '../middlewares/isAuth.js'
 const userRouter = express.Router()
 
 userRouter.get('/seed', seed)
+userRouter.get('/:id', isAuth, userDetail)
 
 userRouter.post(
    '/login',
-   body('name').notEmpty().withMessage('the name field is required!'),
    body('email').notEmpty().withMessage('the email field is required!'),
+   body('password').notEmpty().withMessage('the password field is required!'),
    login
 )
 

@@ -3,13 +3,18 @@ import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
+import { SWRConfig } from 'swr'
 // import { ColorModeScript } from '@chakra-ui/color-mode'
 // import theme from './theme'
+
+const fetcher = (...args) => fetch(...args).then((res) => res.json())
 
 ReactDOM.render(
    <React.StrictMode>
       {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
+      {/* <SWRConfig value={{ fetcher }}> */}
       <App />
+      {/* </SWRConfig> */}
    </React.StrictMode>,
    document.getElementById('root')
 )

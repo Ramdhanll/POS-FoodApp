@@ -10,6 +10,7 @@ import {
    AdminProducts,
    AdminReport,
 } from '..'
+import AdminRoute from '../utils/AdminRoute'
 import Navbar from './common/Navbar/Navbar'
 import Sidebar from './common/Sidebar/Sidebar'
 
@@ -32,12 +33,12 @@ const Admin = () => {
                onClick={() => openSidebar && setOpenSidebar(false)}
                bg={bg}
             >
-               <Route path="/admin" component={AdminDashboard} exact />
-               <Route path="/admin/order" component={AdminOrder} />
-               <Route path="/admin/products" component={AdminProducts} />
-               <Route path="/admin/history" component={AdminHistory} />
-               <Route path="/admin/accounts" component={AdminAccounts} />
-               <Route path="/admin/report" component={AdminReport} />
+               <AdminRoute path="/admin" component={AdminDashboard} exact />
+               <AdminRoute path="/admin/order" component={AdminOrder} />
+               <AdminRoute path="/admin/products" component={AdminProducts} />
+               <AdminRoute path="/admin/history" component={AdminHistory} />
+               <AdminRoute path="/admin/accounts" component={AdminAccounts} />
+               <AdminRoute path="/admin/report" component={AdminReport} />
             </Flex>
          </Flex>
       </div>
