@@ -14,6 +14,7 @@ import useSWR from 'swr'
 
 import { Field, Form, Formik } from 'formik'
 import { Redirect } from 'react-router-dom'
+import axios from 'axios'
 
 const Login = ({ history }) => {
    const [errorSubmit, setErrorSubmit] = useState(false)
@@ -23,12 +24,6 @@ const Login = ({ history }) => {
          history.push('/admin')
       }
    }, [history, user])
-
-   const [a, setA] = useState('')
-   const [b, setB] = useState('')
-   const gas = () => {
-      alert(a, b)
-   }
 
    function validateEmail(value) {
       let error
@@ -47,25 +42,14 @@ const Login = ({ history }) => {
    }
 
    const onSubmit = async (values, { setSubmitting }) => {
-      const response = await fetch(
-         `${process.env.REACT_APP_BASE_URL_SERVER}/api/users/login`, // test on web
-         // `http://192.168.100.7:5000/api/users/login`, // test on mobile
-         {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(values),
-         }
-      )
-      const result = await response.json()
-      if (!response.ok) {
-         setErrorSubmit(true)
-      } else {
-         localStorage.setItem('user', JSON.stringify(result))
-         localStorage.setItem('token', result.token)
-         localStorage.setItem('userId', result._id)
+      try {
+         const { data } = await axios.post('/api/users/login', values)
+         localStorage.setItem('user', JSON.stringify(data))
+         localStorage.setItem('token', data.token)
+         localStorage.setItem('userId', data._id)
          history.push('/admin')
+      } catch (error) {
+         setErrorSubmit(true)
       }
    }
 

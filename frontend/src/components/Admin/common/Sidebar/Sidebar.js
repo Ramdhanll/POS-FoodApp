@@ -8,15 +8,20 @@ import {
    MdPeople,
 } from 'react-icons/md'
 import { GiOpenedFoodCan } from 'react-icons/gi'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import useWindowDimensions from '../../../utils/useWindowDimension'
 import { COLORS } from '../../../constants'
 import { NavLink, useLocation } from 'react-router-dom'
+import { UserContext } from '../../../../contexts/userContext'
+import useUser from '../../../../swr/useUser'
 
 const Sidebar = ({ openSidebar, bg }) => {
    const { pathname } = useLocation()
    const [active, setActive] = useState(null)
    const { height } = useWindowDimensions()
+
+   const { userState } = useContext(UserContext)
+
    const navMenu = useMemo(
       () => [
          {
@@ -233,10 +238,10 @@ const Sidebar = ({ openSidebar, bg }) => {
                </WrapItem>
             </Wrap>
             <Text className="name" fontWeight="bold" mt={3} fontSize="sm">
-               Ramadhani
+               {userState?.name}
             </Text>
             <Text color="secondary" fontSize="xs">
-               Super Admin
+               {userState?.isAdmin ? 'Super Admin' : 'Staff'}
             </Text>
             <Button
                variant="outline"

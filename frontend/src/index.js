@@ -4,17 +4,18 @@ import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { SWRConfig } from 'swr'
+import axios from 'axios'
 // import { ColorModeScript } from '@chakra-ui/color-mode'
 // import theme from './theme'
 
-const fetcher = (...args) => fetch(...args).then((res) => res.json())
+const fetcher = (url) => axios(url).then((r) => r.data)
 
 ReactDOM.render(
    <React.StrictMode>
       {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
-      {/* <SWRConfig value={{ fetcher }}> */}
-      <App />
-      {/* </SWRConfig> */}
+      <SWRConfig value={{ fetcher, dedupingInterval: 0 }}>
+         <App />
+      </SWRConfig>
    </React.StrictMode>,
    document.getElementById('root')
 )

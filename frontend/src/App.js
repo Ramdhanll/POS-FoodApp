@@ -9,14 +9,31 @@ import AdminRoute from './components/utils/AdminRoute'
 
 import { UserContext } from './contexts/userContext'
 import { initialState, reducer } from './reducers/userReducer'
+import axios from 'axios'
 
+// axios.defaults.baseURL =
+//    process.env.REACT_APP_ENDPOINTS || 'http://localhost:5000'
+
+if (
+   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+   )
+) {
+   // true for mobile device
+   console.log('mobile')
+   axios.defaults.baseURL = 'http://192.168.100.7:5000'
+} else {
+   // false for not mobile device
+   console.log('laptop')
+   axios.defaults.baseURL =
+      process.env.REACT_APP_ENDPOINTS || 'http://localhost:5000'
+}
 const App = () => {
-   const [state, dispatch] = useReducer(reducer, initialState)
-
+   const [userState, userDispatch] = useReducer(reducer, initialState)
    useEffect(() => {
       const user = JSON.parse(localStorage.getItem('user'))
       if (user) {
-         dispatch({ type: 'USER', payload: user })
+         userDispatch({ type: 'USER', payload: user })
       } else {
          return <Redirect to="/login" />
       }
@@ -25,7 +42,7 @@ const App = () => {
    const Routing = () => (
       <>
          <Route path="/" component={Home} exact />
-         <UserContext.Provider value={{ state, dispatch }}>
+         <UserContext.Provider value={{ userState, userDispatch }}>
             <Route path="/admin" component={Admin} />
          </UserContext.Provider>
          <Route path="/order/:id" component={Order} />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
    Button,
    CloseButton,
@@ -26,15 +26,18 @@ import { Box, Flex, Heading, Stack, Text } from '@chakra-ui/layout'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table'
 import { Select } from '@chakra-ui/select'
 import { MdSearch } from 'react-icons/md'
-import { products } from '../../../Dummies/'
+// import { products } from '../../../Dummies/'
 import { COLORS } from '../../constants'
 import Pagination from '../common/Pagination/Pagination'
+import useSWR from 'swr'
 
 const Products = () => {
    const [active, setActive] = useState(null)
    const [product, setProduct] = useState([])
    const [isModalAdd, setIsModalAdd] = useState(true)
    const { isOpen, onOpen, onClose } = useDisclosure()
+
+   const { data, error } = useSWR('/api/products')
 
    const {
       isOpen: isOpenModalProduct,
@@ -58,6 +61,8 @@ const Products = () => {
       onOpen()
    }
 
+   console.log(data)
+   if (!data && !error) return 'Loading...'
    return (
       <Box w="100%" p={8} h="100%">
          <Flex direction={['column', 'row', 'row']}>
@@ -123,22 +128,30 @@ const Products = () => {
                         </Tr>
                      </Thead>
                      <Tbody>
-                        {products.map((product, i) => (
+                        {data?.products.map((product, i) => (
                            <Tr
-                              key={product.id}
+                              key={product._id}
                               onClick={() => handleDetailProduct(product)}
                               cursor="pointer"
                               _hover={{
                                  backgroundColor: '#BABABA',
                               }}
                               backgroundColor={
-                                 active === product.id && '#d2d2d2'
+                                 active === product._id && '#d2d2d2'
                               }
                            >
-                              <Td>{product.id}</Td>
+                              <Td>{product._id.substring(20)}</Td>
                               <Td>{product.name}</Td>
                               <Td>{product.qty}</Td>
-                              <Td>{product.category}</Td>
+                              <Td>
+                                 {product.category.map((p, i) => {
+                                    if (product.category.length > i + 1) {
+                                       return `${p} | `
+                                    } else {
+                                       return `${p}`
+                                    }
+                                 })}
+                              </Td>
                               <Td>{product.price}</Td>
 
                               <Td>Action</Td>
@@ -239,7 +252,15 @@ const Products = () => {
                            </Box>
                            <Box width="50%" mt={3}>
                               <Heading fontSize="md">Category</Heading>
-                              <Text>{product.category}</Text>
+                              <Text>
+                                 {product.category?.map((p, i) => {
+                                    if (product.category.length > i + 1) {
+                                       return `${p} | `
+                                    } else {
+                                       return `${p}`
+                                    }
+                                 })}
+                              </Text>
                            </Box>
                            <Box width="50%" mt={3}>
                               <Heading fontSize="md">Price</Heading>

@@ -61,11 +61,13 @@ export const register = expressAsyncHandler(async (req, res) => {
 
 export const userDetail = async (req, res) => {
    const userId = req.params.id
-   console.log(req.user)
+   console.log('run')
    try {
       const user = await User.findById(userId).select('-password')
       if (userId === req.user._id) {
+         // setTimeout(() => {
          return res.status(200).json(user)
+         // }, 5000)
       } else {
          console.log('ha')
          return res.status(200).json(user)
