@@ -17,23 +17,27 @@ export const getProducts = expressAsyncHandler(async (req, res) => {
    const name = req.query.name || ''
    const category = req.query.category || ''
    const _id = req.query.id || ''
+   const qty = req.query.qty || ''
 
    const nameFilter = name ? { name: { $regex: name, $options: 'i' } } : {}
    const categoryFilter = category
       ? { category: { $regex: category, $options: 'i' } }
       : {}
    const _idFilter = _id ? { _id } : {}
+   const qtyFilter = qty ? { qty } : {}
 
    const count = await Product.countDocuments({
       ..._idFilter,
       ...nameFilter,
       ...categoryFilter,
+      ...qtyFilter,
    })
 
    const products = await Product.find({
       ..._idFilter,
       ...nameFilter,
       ...categoryFilter,
+      ...qtyFilter,
    })
       .skip(pageSize * (page - 1))
       .limit(pageSize)

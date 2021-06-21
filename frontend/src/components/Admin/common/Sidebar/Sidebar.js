@@ -77,7 +77,12 @@ const Sidebar = ({ openSidebar, bg }) => {
    )
 
    useEffect(() => {
-      const nav = [...navMenu, ...navOthers].filter((c) => c.path === pathname)
+      const filterUrl =
+         pathname.charAt(pathname.length - 1) === '/'
+            ? pathname.slice(0, -1)
+            : pathname
+
+      const nav = [...navMenu, ...navOthers].filter((c) => c.path === filterUrl)
 
       setActive(nav[0].key)
    }, [navMenu, pathname, navOthers])

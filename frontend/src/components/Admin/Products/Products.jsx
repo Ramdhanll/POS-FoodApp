@@ -31,13 +31,20 @@ import { COLORS } from '../../constants'
 import Pagination from '../common/Pagination/Pagination'
 import useSWR from 'swr'
 
-const Products = () => {
+const Products = ({ history }) => {
    const [active, setActive] = useState(null)
    const [product, setProduct] = useState([])
    const [isModalAdd, setIsModalAdd] = useState(true)
    const { isOpen, onOpen, onClose } = useDisclosure()
+   const [products, setProducts] = useState([])
+   const [page, setPage] = useState(1)
+   const [name, setName] = useState('')
+   const { data, error } = useSWR(`/api/products?page=${page}&name=${name}`)
 
-   const { data, error } = useSWR('/api/products')
+   useEffect(() => {
+      setProducts(data?.products)
+      setPage(data?.page)
+   }, [data])
 
    const {
       isOpen: isOpenModalProduct,
@@ -61,7 +68,15 @@ const Products = () => {
       onOpen()
    }
 
-   console.log(data)
+   const handlePagination = (page) => {
+      history.push({
+         search: `?page=${page}`,
+      })
+      setPage(page)
+
+      console.log(page)
+   }
+
    if (!data && !error) return 'Loading...'
    return (
       <Box w="100%" p={8} h="100%">
@@ -97,6 +112,11 @@ const Products = () => {
                            _placeholder={{
                               color: COLORS.secondary,
                            }}
+                           onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                 setName(e.target.value)
+                              }
+                           }}
                         />
                      </InputGroup>
 
@@ -128,7 +148,7 @@ const Products = () => {
                         </Tr>
                      </Thead>
                      <Tbody>
-                        {data?.products.map((product, i) => (
+                        {products?.map((product, i) => (
                            <Tr
                               key={product._id}
                               onClick={() => handleDetailProduct(product)}
@@ -183,7 +203,11 @@ const Products = () => {
                      Add Product
                   </Button>
                   {/* Section Pagination */}
-                  <Pagination />
+                  <Pagination
+                     page={page}
+                     pages={data.pages}
+                     handlePagination={handlePagination}
+                  />
                </Box>
             </Box>
 
